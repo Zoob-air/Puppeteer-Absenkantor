@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const crypto = require("crypto");
+const fs = require("fs");
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -22,7 +23,7 @@ const crypto = require("crypto");
     };
   });
   await page.setViewport({ width, height });
-  await page.setGeolocation({ latitude: 37.7749, longitude: -122.4194 }); // Ganti dengan koordinat yang diinginkan
+  await page.setGeolocation({ latitude: -6.1745003, longitude: 106.7896633 }); // Ganti dengan koordinat yang diinginkan
 
   try {
     await page.goto("https://www.vankasystem.net/absensi/login", {
@@ -30,10 +31,10 @@ const crypto = require("crypto");
     });
 
     await page.waitForSelector('input[name="username"]');
-    await page.type('input[name="username"]', "Teguh");
-    await page.type('input[name="password"]', "K@mb1ng1234");
-    // await page.type('input[name="username"]', "zubair");
-    // await page.type('input[name="password"]', "P@ssw0rdK@mb1ng123");
+    // await page.type('input[name="username"]', "Teguh");
+    // await page.type('input[name="password"]', "K@mb1ng1234");
+    await page.type('input[name="username"]', "zubair");
+    await page.type('input[name="password"]', "P@ssw0rdK@mb1ng123");
 
     // Submit the form and wait for navigation
     await Promise.all([
@@ -42,31 +43,40 @@ const crypto = require("crypto");
     ]);
 
     page.on("console", (msg) => console.log(msg.text()));
-    await page.exposeFunction("absensi", async () =>
-      {
-        const response = await page.evaluate(async (image) => {
-            const response = await fetch('https://www.vankasystem.net/absensi/ajax/absenajaxnew', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                pic: ('./vanka.png') // Kirim gambar dalam format base64
-              })
-            });
-            return response.json(); // Mengembalikan hasil response dalam format JSON
-          });
-      
-          return response;
-      }
-    );
-    await page.evaluate(async () => {
-      // use window.md5 to compute hashes
-      const myString = "PUPPETEER";
-      const myHash = await window.absensi();
-      console.log("hello world")
-      console.log(`md5 of ${myString} is ${JSON.stringify(myHash)}`);
+    const fs = require("fs");
+
+    await page.exposeFunction("absensi", async (imagePath) => {
+      // Baca file gambar dan konversikan ke base64 di Node.js
+      const image = fs.readFileSync(imagePath);
+      const base64Image = image.toString("base64");
+      console.log(base64Image)
+
+      const response = await page.evaluate(async (base64Image) => {
+        const response = await fetch(
+          "https://www.vankasystem.net/absensi/ajax/absenajaxnew",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              maps_absen: "-6.1745003, 106.7896633",
+              base64image: base64Image, // Kirim gambar dalam format base64
+            }),
+          }
+        );
+        return response.json(); // Mengembalikan hasil response dalam format JSON
+      }, base64Image); // Kirimkan base64Image ke dalam page.evaluate
+
+      return response;
     });
+
+    // Memanggil fungsi absensi dengan path gambar
+    const result = await page.evaluate(async () => {
+      return await window.absensi("C:\\Users\\Mas\\Downloads\\file.jpg");
+    });
+
+    console.log(result);
 
     // await page.evaluate("console.log('hello'")
     // await page.addScriptTag({ content: `document.querySelector('h1').innerHTML = "Hello, world!"`});
