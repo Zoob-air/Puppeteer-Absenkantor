@@ -31,10 +31,10 @@ const fs = require("fs");
     });
 
     await page.waitForSelector('input[name="username"]');
-    // await page.type('input[name="username"]', "Teguh");
-    // await page.type('input[name="password"]', "K@mb1ng1234");
-    await page.type('input[name="username"]', "zubair");
-    await page.type('input[name="password"]', "P@ssw0rdK@mb1ng123");
+    await page.type('input[name="username"]', "Teguh");
+    await page.type('input[name="password"]', "K@mb1ng1234");
+    // await page.type('input[name="username"]', "zubair");
+    // await page.type('input[name="password"]', "P@ssw0rdK@mb1ng123");
 
     // Submit the form and wait for navigation
     await Promise.all([
@@ -73,7 +73,7 @@ const fs = require("fs");
 
     // Memanggil fungsi absensi dengan path gambar
     const result = await page.evaluate(async () => {
-      return await window.absensi("C:\\Users\\Mas\\Downloads\\file.jpg");
+      return await window.absensi("C:\\Users\\Mas\\Pictures\\1723173050.png");
     });
 
     console.log(result);
@@ -101,6 +101,6 @@ const fs = require("fs");
   } catch (error) {
     console.error("An error occurred:", error);
   } finally {
-    // await browser.close();
+    await browser.close();
   }
 })();
