@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Webcam Image</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+</head>
+<body>
+    <h1>Webcam Capture Example</h1>
+    <div id="my_camera"></div>
+    <br/>
+    <button onclick="takeSnapshot()">Capture Image</button>
+    <br/><br/>
+    <div id="results">Your captured image will appear here...</div>
+
+    <script>
+        // Configure webcam
+        Webcam.set({
+            width: 320,
+            height: 240,
+            image_format: 'jpeg',
+            jpeg_quality: 90
+        });
+        Webcam.attach('#my_camera');
+
+        let base64image = '';
+
+        function takeSnapshot() {
+            Webcam.snap(function(data_uri) {
+                // Assign captured image to the variable
+                base64image = data_uri;
+                
+                // Display the captured image
+                document.getElementById('results').innerHTML = 
+                    '<img src="' + data_uri + '"/>';
+                
+                // You can now use the base64image variable as needed
+                console.log(base64image);
+            });
+        }
+    </script>
+</body>
+</html>
