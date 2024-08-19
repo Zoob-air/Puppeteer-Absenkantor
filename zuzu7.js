@@ -78,7 +78,7 @@ const fs = require("fs");
 
     // Memanggil fungsi absensi dengan path gambar
     const result = await page.evaluate(async () => {
-      return await window.absensi("C:\\Users\\Mas\\Pictures\\1723173050.png");
+      return await window.absensi("./filegambar.png");
     });
 
     console.log(result);
