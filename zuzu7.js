@@ -90,10 +90,11 @@ const puppeteer = require("puppeteer");
 
     console.log(result);
 
-    await page.screenshot({ path: "screenshot.png" });
+    // await page.screenshot({ path: "screenshot.png" });
   } catch (error) {
     console.error("An error occurred:", error);
   } finally {
+    await new Promise(resolve => setTimeout(resolve, 5000));
     await browser.close();
   }
 })();
