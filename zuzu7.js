@@ -65,7 +65,7 @@ const puppeteer = require("puppeteer");
     await page.exposeFunction("absensi", async (image) => {
 
         const data=JSON.stringify({
-          maps_absen: "-6.1745003, 106.7896633",
+          maps_absen: "-6.1745003,+106.7896633",
           base64image: image, // Kirim gambar dalam format base64
         })
         console.log(data)
