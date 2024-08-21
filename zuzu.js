@@ -139,7 +139,7 @@ const path = require("path");
   } catch (error) {
     console.error("An error occurred:", error);
   } finally {
-    // await new Promise(resolve => setTimeout(resolve, 5000));
-    // await browser.close();
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await browser.close();
   }
 })();
