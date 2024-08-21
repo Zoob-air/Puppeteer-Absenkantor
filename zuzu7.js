@@ -43,6 +43,10 @@ const puppeteer = require("puppeteer");
     ]);
 
     page.on("console", (msg) => console.log(msg.text()));
+    const cookies = await page.cookies();
+    const cookieString = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
+
+    console.log(cookies);
 
     await page.exposeFunction("randomPicture", async () => {
       const mypictures = [
@@ -62,31 +66,36 @@ const puppeteer = require("puppeteer");
       return mypictures[randomIndex];
     });
 
-    await page.exposeFunction("absensi", async (image) => {
-
-        const data=JSON.stringify({
-          maps_absen: "-6.1745003,+106.7896633",
-          base64image: image, // Kirim gambar dalam format base64
-        })
-        console.log(data)
-        const response = await fetch(
-          "https://www.vankasystem.net/absensi/ajax/absenajaxnew",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: data,
-          }
-        );
-        return response.json(); // Mengembalikan hasil response dalam format JSON
-
+    await page.exposeFunction("absensi", async (image,cookieString) => {
+      const data = JSON.stringify({
+        maps_absen: "-6.1855254, 106.8023633",
+        base64image: image, // Kirim gambar dalam format base64
+      });
+      console.log(data);
+      console.log("cookieString",cookieString);
+      const response = await fetch(
+        "https://www.vankasystem.net/absensi/ajax/absenajaxnew",
+        {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'Accept-Language': 'en-US,en;q=0.9,id-ID;q=0.8,id;q=0.7',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Cookie': cookieString,
+            'Origin': 'https://www.vankasystem.net',
+            'Priority': 'u=1, i',
+          },
+          body: data,
+        }
+      );
+      return response.json(); // Mengembalikan hasil response dalam format JSON
     });
 
     // Memanggil fungsi absensi dengan path gambar
-    const result = await page.evaluate(async () => {
-      return await window.absensi(await window.randomPicture());
-    });
+    const result = await page.evaluate(async (cookieString) => {
+      return await window.absensi(await window.randomPicture(), cookieString);
+    }, cookieString);
 
     console.log(result);
 
@@ -94,7 +103,7 @@ const puppeteer = require("puppeteer");
   } catch (error) {
     console.error("An error occurred:", error);
   } finally {
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    await browser.close();
+    // await new Promise(resolve => setTimeout(resolve, 5000));
+    // await browser.close();
   }
 })();
