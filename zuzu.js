@@ -132,8 +132,8 @@ const path = require("path");
     const result = await page.evaluate(async (data) => {
       return await window.absensi(data.uploadPic, data.cookieString);
     }, {uploadPic: await uploadPic(randomPicture()),cookieString});
+    console.log(result);
 
-    // console.log(result);
 
     // await page.screenshot({ path: "screenshot.png" });
   } catch (error) {
